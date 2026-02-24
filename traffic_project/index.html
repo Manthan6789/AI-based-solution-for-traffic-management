@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaptive Traffic Control System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Adaptive Traffic Control Dashboard</h1>
+
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+
+            <select id="modeSelect">
+                <option value="fixed">Fixed Cycle</option>
+                <option value="maxQueue">Max Queue</option>
+                <option value="weighted">Weighted Priority</option>
+            </select>
+        </div>
+
+        <div class="intersection">
+            <div class="road">North: <span id="northQueue">0</span></div>
+            <div class="road">South: <span id="southQueue">0</span></div>
+            <div class="road">East: <span id="eastQueue">0</span></div>
+            <div class="road">West: <span id="westQueue">0</span></div>
+        </div>
+
+        <div class="signal">
+            Current Green Signal: <span id="currentSignal">N</span>
+        </div>
+
+        <div class="metrics">
+            <p>Average Waiting Time: <span id="avgWait">0</span></p>
+            <p>Total Vehicles Served: <span id="served">0</span></p>
+            <p>Max Queue Length: <span id="maxQueue">0</span></p>
+        </div>
+
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/metrics.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
