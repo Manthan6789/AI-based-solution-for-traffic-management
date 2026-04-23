@@ -1,0 +1,83 @@
+/* Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+/* Container */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Title */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button, select {
+    padding: 8px 12px;
+    border: none;
+    background: #2c7be5;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1a5edb;
+}
+
+/* Intersection Display */
+.intersection {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.road {
+    margin: 5px 0;
+}
+
+/* Signal */
+.signal {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Comparison Panels */
+.comparison {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 45%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.panel h2 {
+    text-align: center;
+}
+
+/* Performance Section */
+.performance {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
+}

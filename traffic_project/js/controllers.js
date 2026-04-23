@@ -40,8 +40,8 @@ class WeightedPriorityController {
 
         for (let dir in intersection.queues) {
             scores[dir] =
-                intersection.queues[dir] +
-                this.alpha * intersection.waitingTime[dir];
+    (2 * intersection.queues[dir]) +
+    this.alpha * intersection.waitingTime[dir];
         }
 
         return Object.keys(scores).reduce((a, b) =>

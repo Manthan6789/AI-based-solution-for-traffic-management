@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Adaptive Traffic Control System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -34,11 +35,33 @@
             Current Green Signal: <span id="currentSignal">N</span>
         </div>
 
-        <div class="metrics">
-            <p>Average Waiting Time: <span id="avgWait">0</span></p>
-            <p>Total Vehicles Served: <span id="served">0</span></p>
-            <p>Max Queue Length: <span id="maxQueue">0</span></p>
-        </div>
+        <div class="comparison">
+
+    <div class="panel">
+        <h2>Fixed Cycle</h2>
+        <p>Average Waiting Time: <span id="avgWaitFixed">0</span></p>
+        <p>Total Vehicles Served: <span id="servedFixed">0</span></p>
+        <p>Max Queue Length: <span id="maxQueueFixed">0</span></p>
+    </div>
+
+    <div class="panel">
+        <h2>Weighted Priority</h2>
+        <p>Average Waiting Time: <span id="avgWaitAdaptive">0</span></p>
+        <p>Total Vehicles Served: <span id="servedAdaptive">0</span></p>
+        <p>Max Queue Length: <span id="maxQueueAdaptive">0</span></p>
+    </div>
+
+</div>
+<div class="performance">
+    <h3>Performance Comparison</h3>
+    <p>Waiting Time Improvement:
+        <span id="improvement">0%</span>
+    </p>
+</div>
+
+<div class="chart-container">
+    <canvas id="trafficChart"></canvas>
+</div>
 
     </div>
 

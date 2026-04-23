@@ -1,59 +1,112 @@
 // main.js
 
-let intersection;
-let controller;
+let chart;
+let labels = [];
+let fixedData = [];
+let adaptiveData = [];
+let fixedIntersection;
+let adaptiveIntersection;
+
+let fixedController;
+let adaptiveController;
+
 let timer = null;
 
-// UI elements
-const northEl = document.getElementById("northQueue");
-const southEl = document.getElementById("southQueue");
-const eastEl = document.getElementById("eastQueue");
-const westEl = document.getElementById("westQueue");
-const signalEl = document.getElementById("currentSignal");
+// UI Elements (Fixed)
+const fixedAvgWait = document.getElementById("avgWaitFixed");
+const fixedServed = document.getElementById("servedFixed");
+const fixedMaxQueue = document.getElementById("maxQueueFixed");
 
-const avgWaitEl = document.getElementById("avgWait");
-const servedEl = document.getElementById("served");
-const maxQueueEl = document.getElementById("maxQueue");
+// UI Elements (Adaptive)
+const adaptiveAvgWait = document.getElementById("avgWaitAdaptive");
+const adaptiveServed = document.getElementById("servedAdaptive");
+const adaptiveMaxQueue = document.getElementById("maxQueueAdaptive");
 
 const startBtn = document.getElementById("startBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
-const modeSelect = document.getElementById("modeSelect");
 
-// Initialize system
-function init(mode = "fixed") {
-    intersection = new Intersection(2);
+function init() {
+    fixedIntersection = new Intersection(CONFIG.arrivalRate);
+    adaptiveIntersection = new Intersection(CONFIG.arrivalRate);
 
-    if (mode === "fixed") {
-        controller = new FixedCycleController(5);
-    } else if (mode === "maxQueue") {
-        controller = new MaxQueueController();
-    } else {
-        controller = new WeightedPriorityController(0.5);
-    }
+    fixedController = new FixedCycleController(CONFIG.fixedGreenDuration);
+    adaptiveController = new WeightedPriorityController(CONFIG.alpha);
 
     updateUI();
+    labels = [];
+fixedData = [];
+adaptiveData = [];
+setupChart();
+
 }
 
-// One simulation tick
+function setupChart() {
+    const ctx = document.getElementById("trafficChart").getContext("2d");
+
+    chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Fixed",
+                    data: fixedData,
+                    borderWidth: 2
+                },
+                {
+                    label: "Adaptive",
+                    data: adaptiveData,
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            animation: false
+        }
+    });
+}
+
+function generateSharedArrivals() {
+    return {
+        N: Math.floor(Math.random() * (CONFIG.arrivalRate + 1)),
+        S: Math.floor(Math.random() * (CONFIG.arrivalRate + 1)),
+        E: Math.floor(Math.random() * (CONFIG.arrivalRate + 1)),
+        W: Math.floor(Math.random() * (CONFIG.arrivalRate + 1))
+    };
+}
+
 function tick() {
-    const decision = controller.decide(intersection);
-    intersection.currentSignal = decision;
+    const arrivals = generateSharedArrivals();
 
-    intersection.step();
+    // Apply same arrivals
+    fixedIntersection.applyArrivals(arrivals);
+    adaptiveIntersection.applyArrivals(arrivals);
+
+    // Decide signals
+    fixedIntersection.currentSignal =
+        fixedController.decide(fixedIntersection);
+
+    adaptiveIntersection.currentSignal =
+        adaptiveController.decide(adaptiveIntersection);
+
+    // Step both systems
+    fixedIntersection.step();
+    adaptiveIntersection.step();
 
     updateUI();
+    const time = labels.length;
+labels.push(time);
+
+fixedData.push(parseFloat(calculateAvgWait(fixedIntersection)));
+adaptiveData.push(parseFloat(calculateAvgWait(adaptiveIntersection)));
+
+chart.update();
+
 }
 
-// Update UI values
-function updateUI() {
-    northEl.textContent = intersection.queues.N;
-    southEl.textContent = intersection.queues.S;
-    eastEl.textContent = intersection.queues.E;
-    westEl.textContent = intersection.queues.W;
-
-    signalEl.textContent = intersection.currentSignal;
-
+function calculateAvgWait(intersection) {
     const totalWait =
         intersection.waitingTime.N +
         intersection.waitingTime.S +
@@ -67,17 +120,25 @@ function updateUI() {
         intersection.queues.E +
         intersection.queues.W;
 
-    avgWaitEl.textContent =
-        totalVehicles > 0 ? (totalWait / totalVehicles).toFixed(2) : 0;
-
-    servedEl.textContent = intersection.totalServed;
-    maxQueueEl.textContent = intersection.maxQueueObserved;
+    return totalVehicles > 0
+        ? (totalWait / totalVehicles).toFixed(2)
+        : 0;
 }
 
-// Button handlers
+function updateUI() {
+    fixedAvgWait.textContent = calculateAvgWait(fixedIntersection);
+    fixedServed.textContent = fixedIntersection.totalServed;
+    fixedMaxQueue.textContent = fixedIntersection.maxQueueObserved;
+
+    adaptiveAvgWait.textContent = calculateAvgWait(adaptiveIntersection);
+    adaptiveServed.textContent = adaptiveIntersection.totalServed;
+    adaptiveMaxQueue.textContent =
+        adaptiveIntersection.maxQueueObserved;
+}
+
 startBtn.onclick = () => {
     if (!timer) {
-        timer = setInterval(tick, 1000);
+        timer = setInterval(tick, CONFIG.simulationSpeed);
     }
 };
 
@@ -88,12 +149,7 @@ pauseBtn.onclick = () => {
 
 resetBtn.onclick = () => {
     pauseBtn.onclick();
-    init(modeSelect.value);
+    init();
 };
 
-modeSelect.onchange = () => {
-    init(modeSelect.value);
-};
-
-// Initial load
 init();

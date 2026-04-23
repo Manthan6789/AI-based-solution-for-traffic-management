@@ -22,6 +22,12 @@ class Intersection {
         this.maxQueueObserved = 0;
     }
 
+    applyArrivals(arrivals) {
+    for (let dir in arrivals) {
+        this.queues[dir] += arrivals[dir];
+    }
+}
+
     randomArrival() {
         return Math.floor(Math.random() * (this.arrivalRate + 1));
     }
@@ -34,12 +40,15 @@ class Intersection {
     }
 
     clearVehicle() {
-        const dir = this.currentSignal;
-        if (this.queues[dir] > 0) {
-            this.queues[dir] -= 1;
-            this.totalServed += 1;
-        }
-    }
+    const dir = this.currentSignal;
+
+    const clearanceRate = 3; // 👈 NEW
+
+    const vehiclesToClear = Math.min(clearanceRate, this.queues[dir]);
+
+    this.queues[dir] -= vehiclesToClear;
+    this.totalServed += vehiclesToClear;
+}
 
     updateWaitingTime() {
         for (let dir in this.queues) {
@@ -55,7 +64,6 @@ class Intersection {
     }
 
     step() {
-        this.generateArrivals();
         this.clearVehicle();
         this.updateWaitingTime();
         this.updateMaxQueue();
